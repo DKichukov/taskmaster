@@ -1,5 +1,6 @@
 package com.example.taskmaster.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,6 +37,7 @@ public class Task {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "project_id")
+    @JsonBackReference
     private Project project;
 
 }

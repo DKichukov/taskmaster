@@ -52,7 +52,11 @@ public class ProjectController {
                     updatedProject.setDescription(project.getDescription());
                     updatedProject.getTasks().clear();
                     if(!project.getTasks().isEmpty()) {
-                        updatedProject.getTasks().addAll(project.getTasks());
+//                        updatedProject.getTasks().addAll(project.getTasks());
+                        project.getTasks().forEach(task -> {
+                            task.setProject(updatedProject);
+                            updatedProject.getTasks().add(task);
+                        });
                     }
                     return ResponseEntity.ok(projectService.saveProject(updatedProject));
                 })

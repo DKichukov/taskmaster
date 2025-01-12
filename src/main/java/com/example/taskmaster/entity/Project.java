@@ -1,5 +1,6 @@
 package com.example.taskmaster.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -26,6 +27,7 @@ public class Project {
     private String description;
 
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Task> tasks;
 
 
