@@ -1,59 +1,78 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {Task} from '../../task.model';
-import {DatePipe} from '@angular/common';
+import {AsyncPipe, DatePipe} from '@angular/common';
 import {TaskService} from '../../task.service';
 import {TaskFormComponent} from '../task-form/task-form.component';
+import {Observable} from 'rxjs';
 
 const emptyTask = {
-  name: "",
-  description: "",
+  name: '',
+  description: '',
   dueDate: new Date(),
   completed: false,
-  project: 0,
-  id: 0
-}
+  project: 1,
+  id: 0,
+};
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
   imports: [
-    DatePipe, TaskFormComponent
+    DatePipe, TaskFormComponent, AsyncPipe
   ],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.css',
 })
 export class TaskListComponent {
-  tasks: Task[];
-  showModal = false;
+  tasks: Task[] = [];
+  showModal: boolean = false;
+  formType: 'CREATE' | 'UPDATE' = 'CREATE';
   selectedTask: Task = emptyTask;
-  formType: "CREATE" | "UPDATE" = "CREATE";
+  tasks$!: Observable<Task[]>;
 
-  constructor(private taskService: TaskService) {
-    this.tasks = taskService.getTasks();
+  private taskService = inject(TaskService);
+
+  constructor() {
+    this.updateTasks();
+  }
+
+  updateTasks() {
+    this.tasks$ = this.taskService.getTasks();
   }
 
   handleCheckbox(id: number) {
-    const taskIndex = this.tasks.findIndex(task => task.id === id);
-    const updatedTask = this.tasks[taskIndex];
-    updatedTask.completed = !updatedTask.completed;
-    this.tasks = this.taskService.updateTask(updatedTask);
+    this.taskService.getTaskById(id).subscribe((task) => {
+      if (task) {
+        const updatedTask = { ...task, completed: !task.completed };
+        this.taskService.updateTask(updatedTask).subscribe(() => {
+          this.updateTasks();
+        });
+      }
+    });
   }
 
   deleteTask(id: number) {
-    this.tasks = this.taskService.deleteTask(id);
+    this.taskService.deleteTask(id).subscribe(() => {
+      this.updateTasks();
+    });
   }
 
   updateTask(task: Task) {
-    //set the selected task
     this.selectedTask = task;
-    //set the form type (UPDATE)
-    this.formType = "UPDATE";
-    //open the modal
+    this.formType = 'UPDATE';
     this.showModal = true;
   }
+
   addNewTask() {
     this.selectedTask = emptyTask;
     this.formType = 'CREATE';
     this.showModal = true;
+  }
+
+  handleModalClose(type: 'SUBMIT' | 'CANCEL') {
+    if (type === 'SUBMIT') {
+      this.updateTasks();
+    }
+    this.showModal = false;
   }
 }

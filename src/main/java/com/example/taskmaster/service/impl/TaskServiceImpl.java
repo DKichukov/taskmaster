@@ -29,6 +29,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task saveTask(Task task) {
+        if (task.getId() == 0) {
+            task.setId(null);
+        }
         return taskRepository.save(task);
     }
 

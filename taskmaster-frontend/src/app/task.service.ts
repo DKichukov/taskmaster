@@ -1,67 +1,43 @@
 import { Injectable } from '@angular/core';
 import {Task} from './task.model';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {log} from '@angular-devkit/build-angular/src/builders/ssr-dev-server';
+
+const BASE_URL = 'http://localhost:8080/api/v1'
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
 
-  constructor() { }
-  tasks: Task[] = [
-    {
-      id: 1,
-      name: 'Design wireframe',
-      description: '',
-      completed: false,
-      dueDate: new Date('2023-07-21'),
-      project: 1,
-    },
-    {
-      id: 2,
-      name: 'Develop frontend',
-      description: '',
-      completed: true,
-      dueDate: new Date('2023-02-21'),
-      project: 1,
-    },
-    {
-      id: 3,
-      name: 'Implement backend',
-      description: '',
-      completed: false,
-      dueDate: new Date('2021-07-21'),
-      project: 1,
-    },
-    {
-      id: 4,
-      name: 'Have a party',
-      description: '',
-      completed: true,
-      dueDate: new Date('2021-11-07'),
-      project: 1,
-    },
-  ];
-  // get all tasks
-  getTasks(){
-   return this.tasks;
+  constructor(private http: HttpClient) { }
+
+  // getTasks
+  getTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(`${BASE_URL}/tasks`);
   }
 
-  // add a task
-addTask(task: Task){
-    this.tasks.push(task);
-    return this.tasks;
-}
-  // update a task
-  updateTask(newTask: Task){
-    const taskIndex = this.tasks.findIndex(task => task.id === newTask.id);
-    this.tasks[taskIndex] = newTask;
-    return this.tasks;
+  // addTask
+  addTask(task: Task) {
+    console.log('task: ' + JSON.stringify(task));
+    return this.http.post(`${BASE_URL}/tasks`, { ...task, project: null });
   }
 
-  //delete a task
-  deleteTask(id: number){
-    const taskIndex = this.tasks.findIndex(task => task.id === id);
-    this.tasks.splice(taskIndex, 1);
-    return this.tasks;
+  getTaskById(id: number): Observable<Task> {
+    return this.http.get<Task>(`${BASE_URL}/tasks/${id}`);
+  }
+
+  // updateTask
+  updateTask(newTask: Task) {
+    return this.http.put(`${BASE_URL}/tasks/${newTask.id}`, {
+      ...newTask,
+      project: null,
+    });
+  }
+
+  // deleteTask
+  deleteTask(id: number) {
+    return this.http.delete(`${BASE_URL}/tasks/${id}`);
   }
 }

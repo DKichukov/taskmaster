@@ -55,13 +55,13 @@ export class TaskFormComponent {
       };
 
       if (this.formType === 'CREATE') {
-        // this.taskService.addTask(newTask).subscribe(() => {
+        this.taskService.addTask(newTask).subscribe(() => {
           this.closePanel.emit('SUBMIT');
-        // });
+        });
       } else {
-        // this.taskService.updateTask(newTask).subscribe(() => {
+        this.taskService.updateTask(newTask).subscribe(() => {
           this.closePanel.emit('SUBMIT');
-        // });
+        });
       }
     }
   }
