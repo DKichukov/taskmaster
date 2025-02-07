@@ -36,7 +36,7 @@ export class TaskListComponent {
     this.updateTasks();
   }
 
-  updateTasks() {
+    updateTasks() {
     this.tasks$ = this.taskService.getTasks();
   }
 

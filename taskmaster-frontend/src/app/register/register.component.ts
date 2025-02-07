@@ -18,12 +18,12 @@ export class RegisterComponent {
     this.registerForm = fb.group({
       firstname: ['', Validators.required],
       lastname: ['', Validators.required],
-      email: ['', Validators.required, Validators.email],
-      password: ['', Validators.required, Validators.minLength(6)],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       role: ['USER', Validators.required],
     })
   }
- 
+
   onSubmit() {
     if (this.registerForm.valid) {
       const registerRequest: RegisterRequest = this.registerForm.value;
